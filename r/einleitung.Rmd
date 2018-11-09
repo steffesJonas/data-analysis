@@ -1,0 +1,85 @@
+---
+title: "Data Analysis Maerz"
+author: "Michael In der Au"
+date: "9 November 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r, echo=FALSE, message=FALSE, error=FALSE}
+library(ggplot2)
+```
+
+#Datensätze
+
+##Iris
+
+### Übersicht der Daten
+
+```{r setup, include=FALSE}
+iris <- read.csv(file = "../data/iris.csv")
+```
+
+```{r}
+str(iris)
+```
+```{r}
+head(iris)
+```
+
+```{r}
+summary(iris)
+```
+
+```{r}
+#plotting sepal.length and petal.length using ggplot
+ggplot(data = iris, aes(x = iris$Petal.Length, y = iris$Sepal.Length, colour = iris$Species)) +
+  geom_point() +
+  ggtitle("Iris Species by Petal and Sepal Length")
+```
+```{r}
+#colinearity, displaying the correlation between petal.length and sepal.length
+cor(iris[, c('Petal.Length', 'Sepal.Length')])
+```
+
+
+### Regression
+
+```{r}
+#add new binary regressor to determine if a species is versicolor
+iris[['Is.Versicolor']] <- as.numeric(iris[['Species']] == 'versicolor')
+
+#fitting the linear regresion model to the newly created data
+fit.lm <- lm(iris$Is.Versicolor ~ iris$Petal.Length + iris$Sepal.Length, data = iris)
+
+#displaying the model
+summary(fit.lm)
+
+#adding a new column to only fit predictions with a probability greater than 50%
+iris[['Predict.Versicolor.lm']] <- as.numeric(predict(fit.lm) > 0.5)
+
+#displaying the type 1 and 2 errors
+table(iris[, c('Is.Versicolor', 'Predict.Versicolor.lm')])
+#structure:
+#true negatives | type 2 error
+#-------------------------------
+#type 1 error   | true positives
+```
+
+##Give me some credit
+
+```{r}
+#import train data
+train <- read.csv(file = "../data/giveMeSomeCredit/cs-training.csv", header = T)
+
+#import test data
+test <- read.csv(file = "../data/giveMeSomeCredit/cs-test.csv", header = T)
+```
+```{r}
+str(train)
+```
+```{r}
+summary(train)
+```
+
+
